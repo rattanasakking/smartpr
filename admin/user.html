@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการผู้ใช้งาน</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-page">
+
+    <div class="offcanvas-lg offcanvas-start sidebar-nav p-3" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+        <div class="offcanvas-header">
+            <a href="dashboard.html" class="d-flex align-items-center text-white text-decoration-none">
+                <img src="https://uppic.retc.ac.th/uploads/690dedd77a750.png" alt="Logo" class="sidebar-logo me-2">
+                <span class="fs-4">Admin Panel</span>
+            </a>
+            <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <hr class="text-white">
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="crud.html" class="nav-link">
+                        <i class="bi bi-chat-left-dots me-2"></i> ถาม ตอบ AI
+                    </a>
+                </li>
+                <li>
+                    <a href="lastquetion.html" class="nav-link">
+                        <i class="bi bi-clock-history me-2"></i> คำถามล่าสุด
+                    </a>
+                </li>
+                <li>
+                    <a href="user.html" class="nav-link active">
+                        <i class="bi bi-people me-2"></i> User
+                    </a>
+                </li>
+                <li>
+                    <a href="https://smartpr.retc.ac.th/admin/stayin.html"  class="nav-link" target="_blank">
+                        <i class="bi bi-line me-2"></i> ผู้เยี่ยมชม LINE Office
+                    </a>
+                </li>
+                <li>
+                    <a href="https://connext.aisdevio.ais.th" class="nav-link" target="_blank">
+                        <i class="bi bi-broadcast me-2"></i> Beacon
+                    </a>
+                </li>
+                <li>
+                    <a href="https://uppic.retc.ac.th" class="nav-link" target="_blank">
+                        <i class="bi bi-upload me-2"></i> อัพโหลดรูปภาพ
+                    </a>
+                </li>
+                <li>
+                    <a href="https://manager.line.biz/" class="nav-link" target="_blank">
+                        <i class="bi bi-line me-2"></i> LINE OA
+                    </a>
+                </li>
+            </ul>
+            <hr class="text-white">
+            <a href="#" id="logoutButton" class="nav-link logout-link">
+                <i class="bi bi-box-arrow-right me-2"></i> ออกจากระบบ
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <nav class="navbar header-navbar sticky-top d-lg-none">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="user.html">จัดการผู้ใช้งาน</a>
+            </div>
+        </nav>
+
+        <main class="container-fluid p-4">
+            <h1 class="mb-4">จัดการผู้ใช้งาน (User)</h1>
+
+            <div class="card mb-4">
+                <div class="card-header"><h3 id="formTitle">เพิ่มผู้ใช้ใหม่</h3></div>
+                <div class="card-body">
+                    <form id="userForm">
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" required>
+                            <div class="form-text" id="passwordHelp"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">ชื่อ (Name)</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        
+                        <input type="hidden" id="editModeId" value="">
+                        <button type="submit" class="btn btn-primary" id="submitButton">บันทึก</button>
+                        <button type="button" class="btn btn-secondary d-none" id="cancelEditButton">ยกเลิก</button>
+                    </form>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h3>ผู้ใช้งานทั้งหมด</h3>
+            <button id="refreshButton" class="btn btn-info mb-3 text-white">โหลดข้อมูลใหม่</button>
+            
+            <div class="card">
+                <div class="card-body table-responsive-wrapper"> 
+                    <table class="table table-striped table-bordered align-middle" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>ชื่อ</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body">
+                            <tr><td colspan="5" class="text-center">กำลังโหลด...</td></tr> </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            alert("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+            window.location.href = 'login.html';
+        }
+
+        const API_URL = "https://api.sheety.co/423538c420e6cba4d60e9a41d250224e/chatGpt/user";
+        const SHEET_NAME = "user"; 
+        const form = document.getElementById('userForm');
+        const tableBody = document.getElementById('data-table-body');
+        const refreshButton = document.getElementById('refreshButton');
+        const formTitle = document.getElementById('formTitle');
+        const submitButton = document.getElementById('submitButton');
+        const cancelEditButton = document.getElementById('cancelEditButton');
+        const editModeIdInput = document.getElementById('editModeId');
+        const usernameInput = document.getElementById('username');
+        const nameInput = document.getElementById('name'); // (ดึง Input "ชื่อ")
+        const passwordInput = document.getElementById('password');
+        const passwordHelp = document.getElementById('passwordHelp');
+
+        async function fetchData() {
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center">กำลังโหลด...</td></tr>'; // (แก้ colspan="5")
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                renderTable(data[SHEET_NAME] || []);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center">เกิดข้อผิดพลาด: ${error.message}</td></tr>`; // (แก้ colspan="5")
+            }
+        }
+        
+        function renderTable(rows) {
+            tableBody.innerHTML = '';
+            if (rows.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">ไม่พบข้อมูล</td></tr>'; // (แก้ colspan="5")
+                return;
+            }
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td>${row.id}</td>
+                    <td>${row.username}</td> 
+                    <td>********</td>
+                    <td>${row.name || ''}</td> 
+                    <td>
+                        <button class="btn btn-warning btn-sm me-1" onclick="handleEdit(${row.id})">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="handleDelete(${row.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+
+                tableBody.appendChild(tr);
+            });
+        }
+        
+        function resetForm() {
+            form.reset(); 
+            editModeIdInput.value = ''; 
+            formTitle.innerText = 'เพิ่มผู้ใช้ใหม่';
+            submitButton.innerText = 'บันทึก';
+            submitButton.classList.replace('btn-warning', 'btn-primary'); 
+            cancelEditButton.classList.add('d-none');
+            passwordInput.required = true;
+            passwordHelp.innerText = "";
+        }
+        
+        async function handleEdit(id) {
+            try {
+                const response = await fetch(`${API_URL}/${id}`);
+                if (!response.ok) throw new Error('Failed to fetch user data');
+                const data = await response.json();
+                const rowData = data[SHEET_NAME];
+                
+                usernameInput.value = rowData.username;
+                nameInput.value = rowData.name || ''; // (ดึง "ชื่อ" มาใส่ฟอร์ม)
+                
+                passwordInput.value = ""; 
+                passwordInput.required = false;
+                passwordHelp.innerText = "ป้อนรหัสผ่านใหม่ (หากต้องการเปลี่ยน) ถ้าเว้นว่างไว้จะใช้รหัสเดิม";
+                editModeIdInput.value = id;
+                formTitle.innerText = `แก้ไขผู้ใช้ ID: ${id}`;
+                submitButton.innerText = 'อัปเดต';
+                submitButton.classList.replace('btn-primary', 'btn-warning');
+                cancelEditButton.classList.remove('d-none'); 
+                form.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                 alert('ไม่สามารถโหลดข้อมูลผู้ใช้ได้');
+            }
+        }
+        
+        async function handleDelete(id) {
+            if (!confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ ID: ${id}?`)) return;
+            try {
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                fetchData(); 
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                alert('เกิดข้อผิดพลาดในการลบ: ' + error.message);
+            }
+        }
+        
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); 
+            const id = editModeIdInput.value;
+            
+            // (เพิ่ม "name" ตอนส่งข้อมูล)
+            const userData = { 
+                username: usernameInput.value,
+                name: nameInput.value,
+                password: passwordInput.value // (Password จะถูกส่งไปเสมอ)
+            };
+            
+            // (ตรรกะจัดการ password ตอน Edit)
+            if (id && !passwordInput.value) { // ถ้าเป็นโหมดแก้ไข และไม่ป้อนรหัสใหม่
+                delete userData.password; // ลบ key password ออก (Sheety จะไม่ยุ่งกับค่าเดิม)
+            }
+            
+            const formData = { [SHEET_NAME]: userData };
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_URL}/${id}` : API_URL;
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                resetForm(); 
+                fetchData(); 
+            } catch (error) {
+                console.error(`Error ${method} data:`, error);
+                alert(`เกิดข้อผิดพลาดในการบันทึก (${method})`);
+            }
+        });
+        
+        cancelEditButton.addEventListener('click', resetForm);
+        refreshButton.addEventListener('click', fetchData);
+        
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            if (confirm("คุณต้องการออกจากระบบหรือไม่?")) {
+                sessionStorage.removeItem('isLoggedIn');
+                window.location.href = 'login.html';
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', fetchData);
+    </script>
+</body>
+</html>

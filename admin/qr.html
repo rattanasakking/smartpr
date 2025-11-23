@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RETC QR Code Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --primary: #4f46e5;
+            --secondary: #06b6d4;
+            --accent: #10b981;
+            --surface: #ffffff;
+            --text: #374151;
+            --text-light: #64748b;
+            --border: #e5e7eb;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        html, body {
+            height: 100%;
+            font-family: 'Prompt', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px var(--shadow);
+            padding: 32px;
+            max-width: 480px;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+        .tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+        .tabs::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        .tab {
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px 8px 0 0;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .tab:hover {
+            color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(79, 70, 229, 0.08);
+        }
+        .tab-content {
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 14px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            background: var(--surface);
+            font-family: inherit;
+            color: var(--text);
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .generate-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+        }
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+        .qr-result {
+            display: none;
+            text-align: center;
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+            border-radius: 16px;
+            border: 2px solid rgba(79, 70, 229, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+        .qr-result.show {
+            display: block;
+        }
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--shadow);
+        }
+        .download-btn {
+            margin: 24px auto 0;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--accent) 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+        .wifi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .wifi-full {
+            grid-column: 1 / -1;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+                max-width: 100%;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            .tabs {
+                gap: 4px;
+            }
+            .tab {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            .wifi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .subtitle {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RETC QR Code Generator</h1>
+            <p class="subtitle">สร้าง QR Code ฟรี ไม่มีโฆษณา</p>
+        </div>
+        <div class="tabs">
+            <button class="tab active" data-tab="url">🌐 URL</button>
+            <button class="tab" data-tab="text">📝 ข้อความ</button>
+            <button class="tab" data-tab="wifi">📶 Wi-Fi</button>
+            <button class="tab" data-tab="vcard">👤 vCard</button>
+            <button class="tab" data-tab="email">📧 อีเมล</button>
+            <button class="tab" data-tab="whatsapp">💚 WhatsApp</button>
+            <button class="tab" data-tab="phone">📞 โทร</button>
+            <button class="tab" data-tab="sms">💬 SMS</button>
+            <button class="tab" data-tab="line">💚 LINE</button>
+            <button class="tab" data-tab="maps">🗺️ Maps</button>
+            <button class="tab" data-tab="payment">💳 ชำระเงิน</button>
+        </div>
+        <!-- URL Tab -->
+        <div id="url-content" class="tab-content active">
+            <form id="url-form">
+                <div class="form-group">
+                    <label for="url-input">URL ที่ต้องการสร้าง QR Code</label>
+                    <input type="url" id="url-input" placeholder="https://example.com" required>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- Text Tab -->
+        <div id="text-content" class="tab-content">
+            <form id="text-form">
+                <div class="form-group">
+                    <label for="text-input">ข้อความที่ต้องการสร้าง QR Code</label>
+                    <textarea id="text-input" placeholder="พิมพ์ข้อความของคุณ" required></textarea>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- WiFi Tab -->
+        <div id="wifi-content" class="tab-content">
+            <form id="wifi-form">
+                <div class="wifi-grid">
+                    <div class="form-group wifi-full">
+                        <label for="wifi-ssid">ชื่อ WiFi (SSID)</label>
+                        <input type="text" id="wifi-ssid" placeholder="ชื่อเครือข่าย WiFi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="wifi-encryption">ประเภทการเข้ารหัส</label>
+                        <select id="wifi-encryption">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">ไม่มีรหัสผ่าน</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="wifi-password">รหัสผ่าน</label>
+                        <input type="text" id="wifi-password" placeholder="รหัสผ่าน WiFi">
+                    </div>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- vCard Tab -->
+        <div id="vcard-content" class="tab-content">
+            <form id="vcard-form">
+                <div class="form-group">
+                    <label for="vcard-name">👤 ชื่อ-นามสกุล</label>
+                    <input type="text" id="vcard-name" placeholder="ชื่อ นามสกุล" required>
+                </div>
+                <div class="form-group">
+                    <label for="vcard-phone">📞 เบอร์โทรศัพท์</label>
+                    <input type="tel" id="vcard-phone" placeholder="08x-xxx-xxxx">
+                </div>
+                <div class="form-group">
+                    <label for="vcard-email">📧 อีเมล</label>
+                    <input type="email" id="vcard-email" placeholder="example@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="vcard-company">🏢 บริษัท/องค์กร</label>
+                    <input type="text" id="vcard-company" placeholder="ชื่อบริษัท">
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- Email Tab -->
+        <div id="email-content" class="tab-content">
+            <form id="email-form">
+                <div class="form-group">
+                    <label for="email-to">📧 อีเมลผู้รับ</label>
+                    <input type="email" id="email-to" placeholder="recipient@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="email-subject">📋 หัวข้อ</label>
+                    <input type="text" id="email-subject" placeholder="หัวข้ออีเมล">
+                </div>
+                <div class="form-group">
+                    <label for="email-body">✏️ เนื้อหา</label>
+                    <textarea id="email-body" placeholder="เนื้อหาอีเมล"></textarea>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- WhatsApp Tab -->
+        <div id="whatsapp-content" class="tab-content">
+            <form id="whatsapp-form">
+                <div class="form-group">
+                    <label for="whatsapp-phone">💚 เบอร์โทรศัพท์</label>
+                    <input type="tel" id="whatsapp-phone" placeholder="66812345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="whatsapp-message">💬 ข้อความ (ไม่บังคับ)</label>
+                    <textarea id="whatsapp-message" placeholder="สวัสดีครับ"></textarea>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- Phone Tab -->
+        <div id="phone-content" class="tab-content">
+            <form id="phone-form">
+                <div class="form-group">
+                    <label for="phone-number">📞 เบอร์โทรศัพท์</label>
+                    <input type="tel" id="phone-number" placeholder="08x-xxx-xxxx" required>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- SMS Tab -->
+        <div id="sms-content" class="tab-content">
+            <form id="sms-form">
+                <div class="form-group">
+                    <label for="sms-phone">📱 เบอร์โทรศัพท์</label>
+                    <input type="tel" id="sms-phone" placeholder="08x-xxx-xxxx" required>
+                </div>
+                <div class="form-group">
+                    <label for="sms-message">💬 ข้อความ</label>
+                    <textarea id="sms-message" placeholder="ข้อความที่ต้องการส่ง"></textarea>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- LINE Tab -->
+        <div id="line-content" class="tab-content">
+            <form id="line-form">
+                <div class="form-group">
+                    <label for="line-type">💚 ประเภท LINE</label>
+                    <select id="line-type" required>
+                        <option value="">เลือกประเภท</option>
+                        <option value="profile">โปรไฟล์ LINE</option>
+                        <option value="official">LINE Official Account</option>
+                        <option value="chat">แชท LINE</option>
+                    </select>
+                </div>
+                <div class="form-group" id="line-id-group" style="display: none;">
+                    <label for="line-id">🆔 LINE ID</label>
+                    <input type="text" id="line-id" placeholder="line_id">
+                </div>
+                <div class="form-group" id="line-url-group" style="display: none;">
+                    <label for="line-url">🔗 LINE URL</label>
+                    <input type="url" id="line-url" placeholder="https://line.me/ti/p/...">
+                </div>
+                <div class="form-group" id="line-phone-group" style="display: none;">
+                    <label for="line-phone">📱 เบอร์โทรศัพท์</label>
+                    <input type="tel" id="line-phone" placeholder="0812345678">
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- Maps Tab -->
+        <div id="maps-content" class="tab-content">
+            <form id="maps-form">
+                <div class="form-group">
+                    <label for="maps-location">🗺️ สถานที่หรือพิกัด</label>
+                    <input type="text" id="maps-location" placeholder="Bangkok, Thailand หรือ 13.7563,100.5018" required>
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- Payment Tab -->
+        <div id="payment-content" class="tab-content">
+            <form id="payment-form">
+                <div class="form-group">
+                    <label for="payment-method">💳 วิธีชำระเงิน</label>
+                    <select id="payment-method" required>
+                        <option value="">เลือกวิธีชำระ</option>
+                        <option value="promptpay">PromptPay</option>
+                        <option value="truemoney">TrueMoney</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="payment-id">🆔 หมายเลขบัญชี/เบอร์โทร</label>
+                    <input type="text" id="payment-id" placeholder="0812345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="payment-amount">💰 จำนวนเงิน (บาท)</label>
+                    <input type="number" id="payment-amount" placeholder="100" min="1">
+                </div>
+                <button type="submit" class="generate-btn">สร้าง QR Code</button>
+            </form>
+        </div>
+        <!-- QR Result -->
+        <div class="qr-result" id="qr-result">
+            <div id="qrcode"></div>
+            <button class="download-btn" id="download-btn">📥 ดาวน์โหลด QR Code</button>
+        </div>
+    </div>
+    <script>
+        // Tab Switching
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`${targetTab}-content`).classList.add('active');
+                document.getElementById('qr-result').classList.remove('show');
+            });
+        });
+        // QR Code Generation
+        let currentQRCode = null;
+        function generateQRCode(text) {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            currentQRCode = new QRCode(qrContainer, {
+                text: text,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            document.getElementById('qr-result').classList.add('show');
+        }
+        // URL Form
+        document.getElementById('url-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const url = document.getElementById('url-input').value;
+            generateQRCode(url);
+        });
+        // Text Form
+        document.getElementById('text-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = document.getElementById('text-input').value;
+            generateQRCode(text);
+        });
+        // WiFi Form
+        document.getElementById('wifi-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const ssid = document.getElementById('wifi-ssid').value;
+            const encryption = document.getElementById('wifi-encryption').value;
+            const password = document.getElementById('wifi-password').value;
+            let wifiString = `WIFI:T:${encryption};S:${ssid};`;
+            if (encryption !== 'nopass' && password) {
+                wifiString += `P:${password};`;
+            }
+            wifiString += ';';
+            generateQRCode(wifiString);
+        });
+        document.getElementById('wifi-encryption').addEventListener('change', (e) => {
+            const passwordField = document.getElementById('wifi-password');
+            if (e.target.value === 'nopass') {
+                passwordField.disabled = true;
+                passwordField.value = '';
+                passwordField.placeholder = 'ไม่ต้องใช้รหัสผ่าน';
+            } else {
+                passwordField.disabled = false;
+                passwordField.placeholder = 'รหัสผ่าน WiFi';
+            }
+        });
+        // vCard Form
+        document.getElementById('vcard-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('vcard-name').value;
+            const phone = document.getElementById('vcard-phone').value;
+            const email = document.getElementById('vcard-email').value;
+            const company = document.getElementById('vcard-company').value;
+            let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
+            vcard += `FN:${name}\n`;
+            if (phone) vcard += `TEL:${phone}\n`;
+            if (email) vcard += `EMAIL:${email}\n`;
+            if (company) vcard += `ORG:${company}\n`;
+            vcard += 'END:VCARD';
+            generateQRCode(vcard);
+        });
+        // Email Form
+        document.getElementById('email-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const to = document.getElementById('email-to').value;
+            const subject = document.getElementById('email-subject').value;
+            const body = document.getElementById('email-body').value;
+            let emailString = `mailto:${to}`;
+            const params = [];
+            if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
+            if (body) params.push(`body=${encodeURIComponent(body)}`);
+            if (params.length > 0) emailString += `?${params.join('&')}`;
+            generateQRCode(emailString);
+        });
+        // WhatsApp Form
+        document.getElementById('whatsapp-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('whatsapp-phone').value;
+            const message = document.getElementById('whatsapp-message').value;
+            let whatsappUrl = `https://wa.me/${phone}`;
+            if (message) whatsappUrl += `?text=${encodeURIComponent(message)}`;
+            generateQRCode(whatsappUrl);
+        });
+        // Phone Form
+        document.getElementById('phone-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('phone-number').value;
+            generateQRCode(`tel:${phone}`);
+        });
+        // SMS Form
+        document.getElementById('sms-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('sms-phone').value;
+            const message = document.getElementById('sms-message').value;
+            let smsString = `sms:${phone}`;
+            if (message) smsString += `?body=${encodeURIComponent(message)}`;
+            generateQRCode(smsString);
+        });
+        // LINE Form
+        document.getElementById('line-type').addEventListener('change', (e) => {
+            const lineIdGroup = document.getElementById('line-id-group');
+            const lineUrlGroup = document.getElementById('line-url-group');
+            const linePhoneGroup = document.getElementById('line-phone-group');
+            const lineIdInput = document.getElementById('line-id');
+            const lineUrlInput = document.getElementById('line-url');
+            const linePhoneInput = document.getElementById('line-phone');
+            lineIdGroup.style.display = 'none';
+            lineUrlGroup.style.display = 'none';
+            linePhoneGroup.style.display = 'none';
+            lineIdInput.required = false;
+            lineUrlInput.required = false;
+            linePhoneInput.required = false;
+            if (e.target.value === 'profile') {
+                lineIdGroup.style.display = 'block';
+                lineIdInput.required = true;
+            } else if (e.target.value === 'official') {
+                lineUrlGroup.style.display = 'block';
+                lineUrlInput.required = true;
+            } else if (e.target.value === 'chat') {
+                linePhoneGroup.style.display = 'block';
+                linePhoneInput.required = true;
+            }
+        });
+        document.getElementById('line-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const lineType = document.getElementById('line-type').value;
+            const lineId = document.getElementById('line-id').value;
+            const lineUrl = document.getElementById('line-url').value;
+            const linePhone = document.getElementById('line-phone').value;
+            let lineString = '';
+            if (lineType === 'profile') {
+                lineString = `https://line.me/ti/p/~${lineId}`;
+            } else if (lineType === 'official') {
+                lineString = lineUrl;
+            } else if (lineType === 'chat') {
+                lineString = `https://line.me/ti/p/${linePhone}`;
+            }
+            generateQRCode(lineString);
+        });
+        // Maps Form
+        document.getElementById('maps-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const location = document.getElementById('maps-location').value;
+            const mapsUrl = `https://maps.google.com/maps?q=${encodeURIComponent(location)}`;
+            generateQRCode(mapsUrl);
+        });
+        // Payment Form
+        document.getElementById('payment-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const method = document.getElementById('payment-method').value;
+            const id = document.getElementById('payment-id').value;
+            const amount = document.getElementById('payment-amount').value;
+            let paymentText = `ชำระเงินผ่าน ${method.toUpperCase()}\nหมายเลข: ${id}`;
+            if (amount) paymentText += `\nจำนวน: ${amount} บาท`;
+            generateQRCode(paymentText);
+        });
+        // Download Button
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const now = new Date();
+                const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
+                const filename = `QRCode_${timestamp}.png`;
+                const newCanvas = document.createElement('canvas');
+                const ctx = newCanvas.getContext('2d');
+                newCanvas.width = canvas.width;
+                newCanvas.height = canvas.height;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+                ctx.drawImage(canvas, 0, 0);
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = newCanvas.toDataURL('image/png', 1.0);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                const downloadBtn = document.getElementById('download-btn');
+                const originalText = downloadBtn.textContent;
+                downloadBtn.textContent = '✓ ดาวน์โหลดแล้ว!';
+                downloadBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                setTimeout(() => {
+                    downloadBtn.textContent = originalText;
+                    downloadBtn.style.background = 'linear-gradient(135deg, var(--accent) 0%, #059669 100%)';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

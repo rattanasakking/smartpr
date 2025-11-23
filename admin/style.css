@@ -1,0 +1,160 @@
+/* ==========================
+   Global & Login Page
+   ========================== */
+
+/* 1. สไตล์หน้า Login */
+body.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f0f2f5; /* พื้นหลังสีเทาอ่อน */
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    border: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.login-logo {
+    display: block;
+    margin: 0 auto 1.5rem auto;
+    max-width: 120px;
+}
+
+/* ==========================
+   Dashboard Layout (Responsive)
+   ========================== */
+
+/* 2. สไตล์หน้า Dashboard (ทุกหน้า) */
+body.dashboard-page {
+    background-color: #f0f2f5;
+}
+
+/* 3. สไตล์ Sidebar (เมนู) */
+.sidebar-nav {
+    width: 280px;
+    /* --- 🎨 นี่คือที่เปลี่ยนสีเมนูหลัก --- */
+    background-color: #0d6efd; /* สีน้ำเงินหลัก */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.sidebar-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+
+.sidebar-nav .nav-link {
+    color: #ffffff;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+.sidebar-nav .nav-link:hover {
+    color: #ffffff;
+    opacity: 1;
+    /* --- 🎨 สีตอนเอาเมาส์ชี้ --- */
+    background: #0b5ed7; 
+}
+
+.sidebar-nav .nav-link.active {
+    color: #ffffff;
+    opacity: 1;
+    font-weight: bold;
+     /* --- 🎨 สีเมนูที่ถูกเลือก --- */
+    background: #0a58ca;
+}
+
+.sidebar-nav .logout-link {
+    color: #fff;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+.sidebar-nav .logout-link:hover {
+    color: #fff;
+    opacity: 1;
+    background: #c82333; /* สีแดงตอนชี้ปุ่ม Logout */
+}
+
+/* 4. สไตล์ Navbar (ที่ซ่อนปุ่ม Hamburger) */
+.header-navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 5. โครงสร้าง Responsive (สำคัญมาก) */
+
+/* Desktop Mode (หน้าจอใหญ่กว่า 992px) */
+@media (min-width: 992px) {
+    body.dashboard-page {
+        display: grid;
+        grid-template-columns: 280px 1fr; /* เมนูกว้าง 280px, ที่เหลือคือเนื้อหา */
+    }
+
+    /* บังคับให้ Offcanvas (เมนู) แสดงตลอดเวลาในจอใหญ่ */
+    .sidebar-nav.offcanvas-lg {
+        grid-column: 1 / 2;
+        position: relative;
+        transform: none !important;
+        visibility: visible !important;
+        height: 100vh; /* ยืดเต็มจอ */
+        background-color: #0d6efd !important;
+        top: 0;
+    }
+    
+    .main-content {
+        grid-column: 2 / 3;
+    }
+    
+    /* ซ่อนปุ่ม Hamburger ในจอใหญ่ */
+    .navbar-toggler {
+        display: none;
+    }
+}
+
+/* Mobile Mode (หน้าจอเล็กกว่า 992px) */
+@media (max-width: 991.98px) {
+    .sidebar-nav.offcanvas-lg {
+        /* ในจอมือถือ ให้ใช้สีน้ำเงิน */
+        background-color: #0d6efd !important;
+    }
+}
+
+
+/* ==========================
+   Component Styles
+   ========================== */
+
+/* 6. สไตล์การ์ด (ให้สวยงามขึ้น) */
+.card {
+    border: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.card-header {
+    background-color: #fff;
+    border-bottom: 0;
+    padding-top: 1.25rem;
+    padding-bottom: 0;
+}
+
+/* 7. สไตล์รูปภาพในตาราง */
+.table-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+/* 8. ทำให้ตารางเลื่อนซ้าย-ขวาได้ในจอมือถือ */
+.table-responsive-wrapper {
+    overflow-x: auto;
+}

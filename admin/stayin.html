@@ -1,0 +1,176 @@
+
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผู้ส่วนร่วม LINE RETC Official </title>
+
+    <!--=====FAB ICON=======-->
+    <link rel="icon" href="https://uppic.retc.ac.th///uploads/691134e447aad.ico" type="image/x-icon" />
+
+    <!--===== CSS LINK =======-->
+    <link rel="stylesheet" href="assets/css/plugins/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/plugins/aos.css">
+    <link rel="stylesheet" href="assets/css/plugins/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/plugins/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/plugins/owlcarousel.min.css">
+    <link rel="stylesheet" href="assets/css/plugins/sidebar.css">
+    <link rel="stylesheet" href="assets/css/plugins/slick-slider.css">
+    <link rel="stylesheet" href="assets/css/plugins/nice-select.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <!--=====  JS SCRIPT LINK =======-->
+    <script src="assets/js/plugins/jquery-3.7.1.min.js"></script>
+    <style>
+        :root{
+            --bg: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            --avatar-size: 144px;
+        }
+        html,body{
+            height:100%;
+            margin:0;
+            background:var(--bg);
+            overflow:hidden;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-family:sans-serif;
+            position:relative;
+        }
+        .float-area{
+            position:relative;
+            width:100vw;
+            height:100vh;
+            overflow:hidden;
+        }
+        .avatar{
+            position:absolute;
+            width:var(--avatar-size);
+            height:var(--avatar-size);
+            border-radius:50%;
+            overflow:hidden;
+            box-shadow:0 0 20px rgba(0,0,0,0.4);
+            border:2px solid rgba(255,255,255,0.3);
+            animation: floatMove 6s ease-in-out infinite alternate;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:flex-end;
+            color:black;
+            text-shadow: 0 0 4px rgba(0,0,0,0.7);
+            font-size:12px;
+            font-weight:bold;
+            background: white;
+        }
+        .avatar img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            border-radius:50%;
+            margin-bottom:4px;
+        }
+        .center-text{
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            color:#fff;
+            font-size:2.5rem;
+            font-weight:bold;
+            text-align:center;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            pointer-events:none;
+        }
+        @keyframes floatMove{
+            0%{transform:translate(0,0) rotate(0deg);}
+            25%{transform:translate(40px,-60px) rotate(15deg);}
+            50%{transform:translate(-60px,40px) rotate(-15deg);}
+            75%{transform:translate(60px,60px) rotate(10deg);}
+            100%{transform:translate(-40px,-60px) rotate(-10deg);}
+        }
+    </style>
+</head>
+<body>
+
+<!--===== POPUP STARTS =======-->
+
+<!--===== PRELOADER STARTS =======-->
+<div class="preloader">
+    <div class="loader"></div>
+</div>
+<!--===== PRELOADER ENDS =======-->
+
+
+
+<div class="float-area" id="floatArea"></div>
+<div class="center-text">ผู้มีส่วนร่วม LINE RETC Official</div>
+
+
+<script>
+    const floatArea = document.getElementById('floatArea');
+
+    function rand(min, max){
+        return Math.random()*(max-min)+min;
+    }
+
+    async function loadProfiles(){
+        try{
+            const res = await fetch('https://api.sheety.co/423538c420e6cba4d60e9a41d250224e/chatGpt/stayin');
+            const data = await res.json();
+            const profiles = data.stayin;
+
+            floatArea.innerHTML = ''; // ล้างข้อมูลเก่า
+
+            profiles.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'avatar';
+
+                const img = document.createElement('img');
+                img.src = item.profile;
+                img.alt = item.name;
+                el.appendChild(img);
+
+                const nameLabel = document.createElement('div');
+                nameLabel.textContent = item.name;
+                el.appendChild(nameLabel);
+
+                el.style.top = rand(0, 90) + 'vh';
+                el.style.left = rand(0, 90) + 'vw';
+                el.style.animationDuration = rand(6,12) + 's';
+                el.style.animationDelay = rand(-6,6) + 's';
+                el.style.transform = `scale(${rand(0.8,1.2)})`;
+
+                floatArea.appendChild(el);
+            });
+        }catch(err){
+            console.error('Failed to fetch profiles', err);
+        }
+    }
+
+    // โหลดครั้งแรก
+    loadProfiles();
+
+    // อัปเดตทุก 10 วินาที
+    setInterval(loadProfiles, 10000);
+</script>
+<!--===== JS SCRIPT LINK =======-->
+<script src="assets/js/plugins/bootstrap.min.js"></script>
+<script src="assets/js/plugins/fontawesome.js"></script>
+<script src="assets/js/plugins/aos.js"></script>
+<script src="assets/js/plugins/counter.js"></script>
+<script src="assets/js/plugins/sidebar.js"></script>
+<script src="assets/js/plugins/magnific-popup.js"></script>
+<script src="assets/js/plugins/gsap.min.js"></script>
+<script src="assets/js/plugins/ScrollTrigger.min.js"></script>
+<script src="assets/js/plugins/Splitetext.js"></script>
+<script src="assets/js/plugins/SmoothScroll.js"></script>
+<script src="assets/js/plugins/mobilemenu.js"></script>
+<script src="assets/js/plugins/owlcarousel.min.js"></script>
+<script src="assets/js/plugins/nice-select.js"></script>
+<script src="assets/js/plugins/waypoints.js"></script>
+<script src="assets/js/plugins/slick-slider.js"></script>
+<script src="assets/js/plugins/circle-progress.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
